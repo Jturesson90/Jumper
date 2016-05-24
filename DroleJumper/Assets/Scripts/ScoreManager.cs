@@ -11,6 +11,7 @@ public class ScoreManager : MonoBehaviour
 		// Use this for initialization
 		void Awake ()
 		{
+
 				text = GetComponent<Text> ();
 				score = 0;
 				scoreY = playerTransform.transform.position.y;
