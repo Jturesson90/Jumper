@@ -1,41 +1,35 @@
-﻿using UnityEngine;
-using System.Collections;
-using UnityEngine.UI;
+﻿using TMPro;
+using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
-		Text text;
-		public static int score;
-		public Transform playerTransform;
-		private float scoreY;
-		// Use this for initialization
-		void Awake ()
-		{
-				text = GetComponent<Text> ();
-				score = 0;
-				scoreY = playerTransform.transform.position.y;
-		}
+    public static int score;
+    public Transform playerTransform;
+    private float scoreY;
 
-		void Start ()
-		{
-			
-		}
-	
-		// Update is called once per frame
-		void Update ()
-		{
-				UpdateScore ();
-				text.text = " Score: " + score;
-		}
+    private TMP_Text text;
 
-		void UpdateScore ()
-		{
-				if (scoreY < playerTransform.position.y * 9.5f) {
-						scoreY = playerTransform.position.y * 9.5f;
-							
-				}
-				
-				score = (int)scoreY;
-				
-		}
+    // Use this for initialization
+    private void Awake()
+    {
+        text = GetComponent<TMP_Text>();
+        score = 0;
+        scoreY = playerTransform.transform.position.y;
+    }
+
+    private void Update()
+    {
+        UpdateScore();
+        text.SetText(score.ToString());
+    }
+
+    private void UpdateScore()
+    {
+        if (scoreY < playerTransform.position.y * 9.5f)
+        {
+            scoreY = playerTransform.position.y * 9.5f;
+        }
+
+        score = (int)scoreY;
+    }
 }

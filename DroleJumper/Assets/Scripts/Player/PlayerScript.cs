@@ -1,81 +1,80 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PlayerScript : MonoBehaviour
 {
-		public static float JUMP_VELOCITY = 45;
-		public static float MOVE_VELOCITY = 60;
+    public const float JumpVelocity = 45;
+    public const float MoveVelocity = 60;
 
-		// Use this for initialization
-		
-		void Start ()
-		{
-				CheckTrigger ();
-		}
-	
-		// Update is called once per frame
-		void Update ()
-		{
-				CheckTrigger ();
-				HandleInput ();
-				HandlePlayerToBeOnScreen ();
-				
+    private AudioSource audioSource;
 
-		}
+    private new Camera camera;
+
+    private Collider2D collider2d;
+    private Rigidbody2D rigidbody2d;
+
+    // Use this for initialization
+    private void Awake()
+    {
+        rigidbody2d = GetComponent<Rigidbody2D>();
+        collider2d = GetComponent<Collider2D>();
+        audioSource = GetComponent<AudioSource>();
+        camera = Camera.main;
+    }
+
+    private void Start()
+    {
+        CheckTrigger();
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        CheckTrigger();
+        HandleInput();
+        HandlePlayerToBeOnScreen();
+    }
+
+    private void OnCollisionEnter2D(Collision2D coll)
+    {
+        if (coll.gameObject.CompareTag("Bounce")) Jump();
+    }
+
+    private void OnCollisionStay2D(Collision2D coll)
+    {
+        if (coll.gameObject.CompareTag("Bounce")) Jump();
+    }
 
 
-		private void HandlePlayerToBeOnScreen ()
-		{
-				Vector3 positionInScreen = Camera.main.WorldToScreenPoint (transform.position);
-				if (positionInScreen.x < 0) {
-						transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (Camera.main.pixelWidth, positionInScreen.y, positionInScreen.z));
-				} else if (positionInScreen.x > Camera.main.pixelWidth) {
-						transform.position = Camera.main.ScreenToWorldPoint (new Vector3 (0, positionInScreen.y, positionInScreen.z));
-				}
-				//transform.position = new Vector3 (transform.position.x, transform.position.y, 0);
-		}
+    private void HandlePlayerToBeOnScreen()
+    {
+        var positionInScreen = camera.WorldToScreenPoint(transform.position);
+        if (positionInScreen.x < 0)
+            transform.position =
+                camera.ScreenToWorldPoint(new Vector3(camera.pixelWidth, positionInScreen.y,
+                    positionInScreen.z));
+        else if (positionInScreen.x > camera.pixelWidth)
+            transform.position = camera.ScreenToWorldPoint(new Vector3(0, positionInScreen.y, positionInScreen.z));
+        //transform.position = new Vector3 (transform.position.x, transform.position.y, 0);
+    }
 
-		private void CheckTrigger ()
-		{
-				
-				if (GetComponent<Rigidbody2D>().velocity.y > 0) {
-						GetComponent<Collider2D>().isTrigger = true;
-						
-				} else {
-						GetComponent<Collider2D>().isTrigger = false;
-				}
-		}
+    private void CheckTrigger()
+    {
+        collider2d.isTrigger = rigidbody2d.velocity.y > 0;
+    }
 
-		private void HandleInput ()
-		{
-				float dirX = Input.acceleration.x * MOVE_VELOCITY * Time.deltaTime;
-				
-				if (Input.GetKey (KeyCode.LeftArrow)) {
-						dirX = -MOVE_VELOCITY * Time.deltaTime;
-				}
-				if (Input.GetKey (KeyCode.RightArrow)) {
-						dirX = MOVE_VELOCITY * Time.deltaTime;
-				}
-				transform.Translate (dirX, 0, 0);
-		}
+    private void HandleInput()
+    {
+        float dirX = Input.acceleration.x * MoveVelocity * Time.deltaTime;
 
-		private void Jump ()
-		{
-				GetComponent<Rigidbody2D>().velocity = new Vector2 (GetComponent<Rigidbody2D>().velocity.x, 0f);
-				GetComponent<Rigidbody2D>().velocity = new Vector2 (GetComponent<Rigidbody2D>().velocity.x, JUMP_VELOCITY);
-				GetComponent<AudioSource>().Play ();
-		}
+        if (Input.GetKey(KeyCode.LeftArrow)) dirX = -MoveVelocity * Time.deltaTime;
+        if (Input.GetKey(KeyCode.RightArrow)) dirX = MoveVelocity * Time.deltaTime;
+        transform.Translate(dirX, 0, 0);
+    }
 
-		void OnCollisionEnter2D (Collision2D coll)
-		{
-			
-
-				switch (coll.gameObject.tag) {
-				case "Bounce":
-						Jump ();
-						break;
-				default :
-						break;
-				}
-		}
+    private void Jump()
+    {
+        rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, 0f);
+        rigidbody2d.velocity = new Vector2(rigidbody2d.velocity.x, JumpVelocity);
+        audioSource.Play();
+    }
 }
